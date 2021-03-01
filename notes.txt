@@ -1,0 +1,29 @@
+The Quickstart guide, and general usage is documented in README.md
+
+I have implemented a file-watch mechanism using a well-known python library called Watchdog.
+
+The app handles the cases: file contents changed, file deleted, file created. 
+
+I had to suppliment the Watchdog mechanism to handle the cases where the file doesn't initially exist, or has been deleted and recreated after the application starts.
+
+There are a couple of corner cases where the application doesn't work as intended. This mainly happens when using the VIM editor which has a quirky way of saving files. More development work would be needed to handle this cases.
+
+Notifications of file changes are handled by a class watchdog.events.LoggingEventHandler. This is a solid way of logging events to the console, but it prevents more refined logic being used in the event handler to do things such as change the notification message or to perform event filtering. To get around this, we would implement our own event handler with an appropriate signature, or extend one of the Watchdog base classes.
+
+The current logging mentions the directory /app/data. This refers to the internal docker mount point. Again, we would want to filter this out as mentioned above.
+
+Also, the current logging contains extraneous messages due to the use of LoggingEventHandler. Again, this could be improved with a custom event handler.
+
+Note that the file location hasn't been hardcoded. It is passed on the "docker run" command line together with a volume mount. Please see README.md.
+
+Bonus Points:
+
+(1) To extend the alerting functionality, a custom event handler would be needed. This would allow: 
+(a) sending emails using the python library smtplib,
+(b) post to message applications such as Slack,
+(c) send to AWS Cloudwatch.
+
+(2) Regarding what other things to check:
+(a) We could attempt to generate text (or structured text) differencing and print that out to console to show what has actually changed in the file. In Python, there is a library called difflib that can be used to generate differences.
+
+(3) For other general improvements, please see my notes above where I talked about them in context.
